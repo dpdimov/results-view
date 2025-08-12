@@ -1,0 +1,14 @@
+{
+  "components/Chart.tsx -> react-chartjs-2": {
+    "id": "components/Chart.tsx -> react-chartjs-2",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_react-chartjs-2_dist_index_js.js"
+    ]
+  },
+  "components/ScatterplotHeatmap.tsx -> ./Chart": {
+    "id": "components/ScatterplotHeatmap.tsx -> ./Chart",
+    "files": [
+      "static/chunks/_app-pages-browser_components_Chart_tsx.js"
+    ]
+  }
+}
