@@ -187,8 +187,7 @@ export default function Chart({ results }: ChartProps) {
         max: 1,
         display: false, // Hide entire y-axis
       }
-    },
-    plugins: [backgroundImagePlugin]
+    }
   };
 
   if (processedData.length === 0) {
