@@ -47,6 +47,11 @@ export default function AnalyticsPanel({ filters }: AnalyticsPanelProps) {
     fetchAnalytics();
   }, [filters]);
 
+  // Always fetch analytics on mount to ensure fresh data
+  useEffect(() => {
+    fetchAnalytics();
+  }, []);
+
   const fetchAnalytics = async () => {
     setLoading(true);
     try {

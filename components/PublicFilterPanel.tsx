@@ -24,8 +24,12 @@ export default function PublicFilterPanel({ onFiltersChange }: PublicFilterPanel
   }, []);
 
   useEffect(() => {
-    // Apply initial filter when component mounts
-    onFiltersChange(filters);
+    // Apply initial filter when component mounts with a small delay
+    // to ensure proper initialization
+    const timer = setTimeout(() => {
+      onFiltersChange(filters);
+    }, 100);
+    return () => clearTimeout(timer);
   }, []);
 
   const fetchFilterOptions = async () => {

@@ -37,6 +37,7 @@ export default function FilterPanel({ onFiltersChange }: FilterPanelProps) {
     try {
       const response = await fetch('/api/filters');
       const data = await response.json();
+      console.log('Admin filter options received:', data); // Debug log
       setFilterOptions(data);
     } catch (error) {
       console.error('Error fetching filter options:', error);

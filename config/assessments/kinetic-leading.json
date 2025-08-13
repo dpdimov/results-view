@@ -1,11 +1,11 @@
 {
-  "name": "Kinetic Thinking Assessment",
-  "description": "Measures creative and dynamic thinking patterns",
+  "name": "Kinetic Leading Assessment",
+  "description": "Measures creative and dynamic leading patterns",
   "coordinateLabels": {
-    "x_coordinate": "Uncertainty",
-    "y_coordinate": "Possibility"
+    "x_coordinate": "Ecosystem",
+    "y_coordinate": "Time"
   },
-  "backgroundImage": "/images/kinetic-thinking-background.png",
+  "backgroundImage": "/images/kinetic-leading-background.png",
   "visualization": {
     "densityConfig": {
       "bandwidth": 0.03,
