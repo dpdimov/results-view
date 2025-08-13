@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 
 interface FilterOptions {
-  assessmentIds: string[];
   customCodes: string[];
   emailDomains: string[];
 }
@@ -14,13 +13,11 @@ interface FilterPanelProps {
 
 export default function FilterPanel({ onFiltersChange }: FilterPanelProps) {
   const [filterOptions, setFilterOptions] = useState<FilterOptions>({
-    assessmentIds: [],
     customCodes: [],
     emailDomains: []
   });
   
   const [filters, setFilters] = useState({
-    assessmentId: 'kinetic-thinking',
     customCode: '',
     emailDomain: '',
     dateFrom: '',
@@ -54,7 +51,6 @@ export default function FilterPanel({ onFiltersChange }: FilterPanelProps) {
 
   const clearFilters = () => {
     const clearedFilters = {
-      assessmentId: 'kinetic-thinking',
       customCode: '',
       emailDomain: '',
       dateFrom: '',
@@ -85,20 +81,6 @@ export default function FilterPanel({ onFiltersChange }: FilterPanelProps) {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Assessment ID
-          </label>
-          <select
-            value={filters.assessmentId}
-            onChange={(e) => handleFilterChange('assessmentId', e.target.value)}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
-          >
-            {filterOptions.assessmentIds.map((id) => (
-              <option key={id} value={id}>{id.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</option>
-            ))}
-          </select>
-        </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">

@@ -30,11 +30,14 @@ export default function PublicFilterPanel({ onFiltersChange }: PublicFilterPanel
 
   const fetchFilterOptions = async () => {
     try {
-      const response = await fetch('/api/filters');
+      // Fetch assessment IDs directly from results API
+      const response = await fetch('/api/filters/public');
       const data = await response.json();
-      setFilterOptions({ assessmentIds: data.assessmentIds });
+      setFilterOptions({ assessmentIds: data.assessmentIds || [] });
     } catch (error) {
       console.error('Error fetching filter options:', error);
+      // Fallback to hardcoded options if API fails
+      setFilterOptions({ assessmentIds: ['kinetic-thinking'] });
     }
   };
 

@@ -47,7 +47,7 @@ export default function Home() {
     if (isAuthenticated) {
       fetchResults(filters);
     }
-  }, [filters, isAuthenticated]);
+  }, [filters, isAuthenticated, publicFilters]);
 
   const updateBackgroundImage = async (filterParams: any) => {
     try {
