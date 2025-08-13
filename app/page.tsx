@@ -21,8 +21,8 @@ export default function Home() {
   const [results, setResults] = useState<AssessmentResult[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState({});
-  const [publicFilters, setPublicFilters] = useState({});
+  const [filters, setFilters] = useState<any>({});
+  const [publicFilters, setPublicFilters] = useState<any>({});
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
   const [backgroundImage, setBackgroundImage] = useState<string>('/images/plot-background.png');
