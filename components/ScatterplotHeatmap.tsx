@@ -83,7 +83,7 @@ export default function ScatterplotHeatmap({ results, backgroundImage = '/images
       ) : (
         <div className="flex justify-center">
           <div style={{ width: 400, height: 400 }}>
-            <Chart results={results} />
+            <Chart results={results} backgroundImage={backgroundImage} />
           </div>
         </div>
       )}

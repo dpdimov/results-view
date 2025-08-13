@@ -28,6 +28,7 @@ ChartJS.register(
 
 interface ChartProps {
   results: AssessmentResult[];
+  backgroundImage?: string;
 }
 
 interface DataPoint {
@@ -36,21 +37,22 @@ interface DataPoint {
   count: number;
 }
 
-export default function Chart({ results }: ChartProps) {
+export default function Chart({ results, backgroundImage = '/images/plot-background.png' }: ChartProps) {
   const [processedData, setProcessedData] = useState<DataPoint[]>([]);
-  const [backgroundImage, setBackgroundImage] = useState<HTMLImageElement | null>(null);
+  const [backgroundImg, setBackgroundImg] = useState<HTMLImageElement | null>(null);
 
   useEffect(() => {
     // Load background image
     const img = new Image();
     img.onload = () => {
-      setBackgroundImage(img);
+      setBackgroundImg(img);
     };
     img.onerror = () => {
-      console.warn('Background image not found, using default background');
+      console.warn('Background image not found:', backgroundImage);
+      setBackgroundImg(null);
     };
-    img.src = '/images/plot-background.png';
-  }, []);
+    img.src = backgroundImage;
+  }, [backgroundImage]);
 
   useEffect(() => {
     if (results.length > 0) {
@@ -109,7 +111,7 @@ export default function Chart({ results }: ChartProps) {
   const backgroundImagePlugin = {
     id: 'backgroundImage',
     beforeDraw: (chart: any) => {
-      if (backgroundImage) {
+      if (backgroundImg) {
         const ctx = chart.canvas.getContext('2d');
         const chartArea = chart.chartArea;
         
@@ -118,7 +120,7 @@ export default function Chart({ results }: ChartProps) {
         
         // Draw background image to fill entire chart area
         ctx.drawImage(
-          backgroundImage,
+          backgroundImg,
           chartArea.left,
           chartArea.top,
           chartArea.right - chartArea.left,

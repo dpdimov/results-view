@@ -38,6 +38,8 @@ export default function FilterPanel({ onFiltersChange }: FilterPanelProps) {
       const response = await fetch('/api/filters');
       const data = await response.json();
       console.log('Admin filter options received:', data); // Debug log
+      console.log('Custom codes count:', data.customCodes ? data.customCodes.length : 'undefined');
+      console.log('Email domains count:', data.emailDomains ? data.emailDomains.length : 'undefined');
       setFilterOptions(data);
     } catch (error) {
       console.error('Error fetching filter options:', error);
@@ -93,7 +95,7 @@ export default function FilterPanel({ onFiltersChange }: FilterPanelProps) {
             className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
           >
             <option value="">All Custom Codes</option>
-            {filterOptions.customCodes.map((code) => (
+            {(filterOptions.customCodes || []).map((code) => (
               <option key={code} value={code}>{code}</option>
             ))}
           </select>
@@ -109,7 +111,7 @@ export default function FilterPanel({ onFiltersChange }: FilterPanelProps) {
             className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
           >
             <option value="">All Domains</option>
-            {filterOptions.emailDomains.map((domain) => (
+            {(filterOptions.emailDomains || []).map((domain) => (
               <option key={domain} value={domain}>{domain}</option>
             ))}
           </select>

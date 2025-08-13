@@ -21,7 +21,7 @@ export default function Home() {
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<any>({});
-  const [publicFilters, setPublicFilters] = useState<any>({});
+  const [publicFilters, setPublicFilters] = useState<any>({ assessmentId: 'kinetic-thinking' });
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
   const [backgroundImage, setBackgroundImage] = useState<string>('/images/plot-background.png');
@@ -31,15 +31,17 @@ export default function Home() {
     const authenticated = checkClientAuth();
     setIsAuthenticated(authenticated);
     setAuthChecked(true);
-    
-    // Always fetch public data
-    fetchPublicResults(publicFilters);
   }, []);
 
+  // Fetch public data when publicFilters is properly initialized
   useEffect(() => {
-    // Always fetch public data when public filters change
-    fetchPublicResults(publicFilters);
-    // Update background image when filters change
+    if (publicFilters.assessmentId) {
+      fetchPublicResults(publicFilters);
+    }
+  }, [publicFilters]);
+
+  // Update background image when filters change
+  useEffect(() => {
     updateBackgroundImage(publicFilters);
   }, [publicFilters]);
 

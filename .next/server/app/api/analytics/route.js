@@ -19,6 +19,14 @@ exports.modules = {
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var map = {
+	"./kinetic-leading.json": [
+		"(rsc)/./config/assessments/kinetic-leading.json",
+		"_rsc_config_assessments_kinetic-leading_json"
+	],
+	"./kinetic-managing.json": [
+		"(rsc)/./config/assessments/kinetic-managing.json",
+		"_rsc_config_assessments_kinetic-managing_json"
+	],
 	"./kinetic-thinking.json": [
 		"(rsc)/./config/assessments/kinetic-thinking.json",
 		"_rsc_config_assessments_kinetic-thinking_json"
