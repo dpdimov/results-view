@@ -40,16 +40,19 @@ interface DataPoint {
 export default function Chart({ results, backgroundImage = '/images/plot-background.png' }: ChartProps) {
   const [processedData, setProcessedData] = useState<DataPoint[]>([]);
   const [backgroundImg, setBackgroundImg] = useState<HTMLImageElement | null>(null);
+  const [chartKey, setChartKey] = useState(0); // Force chart re-render
 
   useEffect(() => {
     // Load background image
     const img = new Image();
     img.onload = () => {
       setBackgroundImg(img);
+      setChartKey(prev => prev + 1); // Force chart re-render when image loads
     };
     img.onerror = () => {
       console.warn('Background image not found:', backgroundImage);
       setBackgroundImg(null);
+      setChartKey(prev => prev + 1); // Force chart re-render even on error
     };
     img.src = backgroundImage;
   }, [backgroundImage]);
@@ -174,5 +177,5 @@ export default function Chart({ results, backgroundImage = '/images/plot-backgro
     );
   }
 
-  return <Scatter data={chartData} options={options} plugins={[backgroundImagePlugin]} />;
+  return <Scatter key={chartKey} data={chartData} options={options} plugins={[backgroundImagePlugin]} />;
 }
