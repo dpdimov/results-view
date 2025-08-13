@@ -59,12 +59,22 @@ export default function Chart({ results }: ChartProps) {
   }, [results]);
 
   const processScatterData = () => {
-    // Convert all results to simple points (no aggregation)
-    const scatterPoints: DataPoint[] = results.map(result => ({
-      x: parseFloat(result.x_coordinate.toString()),
-      y: parseFloat(result.y_coordinate.toString()),
-      count: 1 // Each individual point
-    }));
+    // Convert all results to simple points with coordinate clamping to match density map margins
+    const scatterPoints: DataPoint[] = results.map(result => {
+      const rawX = parseFloat(result.x_coordinate.toString());
+      const rawY = parseFloat(result.y_coordinate.toString());
+      
+      // Apply 10/12 ratio clamping to match background image plot area
+      const maxRange = 10/12; // ≈ 0.833
+      const clampedX = Math.max(-maxRange, Math.min(maxRange, rawX));
+      const clampedY = Math.max(-maxRange, Math.min(maxRange, rawY));
+      
+      return {
+        x: clampedX,
+        y: clampedY,
+        count: 1 // Each individual point
+      };
+    });
 
     setProcessedData(scatterPoints);
   };
@@ -106,6 +116,7 @@ export default function Chart({ results }: ChartProps) {
         ctx.save();
         ctx.globalAlpha = 1.0;
         
+        // Draw background image to fill entire chart area
         ctx.drawImage(
           backgroundImage,
           chartArea.left,

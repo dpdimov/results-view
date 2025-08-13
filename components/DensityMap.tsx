@@ -63,9 +63,16 @@ export default function DensityMap({
   }, [results, backgroundImg, width, height]);
 
   const normalizeCoordinates = (x: number, y: number): Point => {
-    // Convert from [-1, 1] range to canvas coordinates
-    const canvasX = ((x + 1) / 2) * width;
-    const canvasY = ((1 - y) / 2) * height; // Flip Y axis
+    // Account for background image margins (10% padding on each side)
+    const plotMargin = 0.1;
+    const plotWidth = width * (1 - 2 * plotMargin);
+    const plotHeight = height * (1 - 2 * plotMargin);
+    const plotOffsetX = width * plotMargin;
+    const plotOffsetY = height * plotMargin;
+    
+    // Convert from [-1, 1] range to plot area coordinates
+    const canvasX = plotOffsetX + ((x + 1) / 2) * plotWidth;
+    const canvasY = plotOffsetY + ((1 - y) / 2) * plotHeight; // Flip Y axis
     return { x: canvasX, y: canvasY };
   };
 
@@ -180,19 +187,6 @@ export default function DensityMap({
 
     // Draw the blended result
     ctx.putImageData(imageData, 0, 0);
-
-    // Draw the original points as small dots
-    ctx.save();
-    points.forEach(point => {
-      ctx.beginPath();
-      ctx.arc(point.x, point.y, 2, 0, 2 * Math.PI);
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(0, 0, 0, 0.6)';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-    });
-    ctx.restore();
 
     setIsLoading(false);
   };

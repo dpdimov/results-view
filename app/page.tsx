@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { AssessmentResult } from '@/lib/database';
 import FilterPanel from '@/components/FilterPanel';
 import PublicFilterPanel from '@/components/PublicFilterPanel';
-import ResultsTable from '@/components/ResultsTable';
 import AnalyticsPanel from '@/components/AnalyticsPanel';
 import ScatterplotHeatmap from '@/components/ScatterplotHeatmap';
 import AdminLogin from '@/components/AdminLogin';
@@ -176,29 +175,6 @@ export default function Home() {
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Admin Panel</h2>
               
               <FilterPanel onFiltersChange={handleFiltersChange} />
-              
-              <div className="mb-4">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-xl font-semibold text-gray-800">
-                    Detailed Results ({totalCount} total)
-                  </h3>
-                  {!loading && results.length > 0 && (
-                    <p className="text-sm text-gray-600">
-                      Showing {results.length} of {totalCount} results
-                    </p>
-                  )}
-                </div>
-              </div>
-              
-              <ResultsTable results={results} loading={loading} />
-              
-              {!loading && results.length > 0 && results.length < totalCount && (
-                <div className="mt-6 text-center">
-                  <p className="text-sm text-gray-600">
-                    Showing first {results.length} results. Use filters to narrow down or increase the limit to see more.
-                  </p>
-                </div>
-              )}
             </div>
           </>
         )}

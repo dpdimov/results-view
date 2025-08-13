@@ -6,7 +6,6 @@ interface FilterOptions {
   assessmentIds: string[];
   customCodes: string[];
   emailDomains: string[];
-  styleNames: string[];
 }
 
 interface FilterPanelProps {
@@ -17,18 +16,15 @@ export default function FilterPanel({ onFiltersChange }: FilterPanelProps) {
   const [filterOptions, setFilterOptions] = useState<FilterOptions>({
     assessmentIds: [],
     customCodes: [],
-    emailDomains: [],
-    styleNames: []
+    emailDomains: []
   });
   
   const [filters, setFilters] = useState({
     assessmentId: 'kinetic-thinking',
     customCode: '',
     emailDomain: '',
-    styleName: '',
     dateFrom: '',
-    dateTo: '',
-    limit: '100'
+    dateTo: ''
   });
 
   useEffect(() => {
@@ -61,10 +57,8 @@ export default function FilterPanel({ onFiltersChange }: FilterPanelProps) {
       assessmentId: 'kinetic-thinking',
       customCode: '',
       emailDomain: '',
-      styleName: '',
       dateFrom: '',
-      dateTo: '',
-      limit: '100'
+      dateTo: ''
     };
     setFilters(clearedFilters);
     onFiltersChange(clearedFilters);
@@ -74,12 +68,20 @@ export default function FilterPanel({ onFiltersChange }: FilterPanelProps) {
     <div className="bg-white p-6 rounded-lg shadow-md mb-6">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold text-gray-800">Filters</h2>
-        <button
-          onClick={clearFilters}
-          className="text-blue-600 hover:text-blue-800 text-sm"
-        >
-          Clear All
-        </button>
+        <div className="flex space-x-3">
+          <button
+            onClick={fetchFilterOptions}
+            className="text-blue-600 hover:text-blue-800 text-sm"
+          >
+            Refresh Filters
+          </button>
+          <button
+            onClick={clearFilters}
+            className="text-blue-600 hover:text-blue-800 text-sm"
+          >
+            Clear All
+          </button>
+        </div>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -130,21 +132,6 @@ export default function FilterPanel({ onFiltersChange }: FilterPanelProps) {
           </select>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Style Name
-          </label>
-          <select
-            value={filters.styleName}
-            onChange={(e) => handleFilterChange('styleName', e.target.value)}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
-          >
-            <option value="">All Styles</option>
-            {filterOptions.styleNames.map((style) => (
-              <option key={style} value={style}>{style}</option>
-            ))}
-          </select>
-        </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -170,22 +157,6 @@ export default function FilterPanel({ onFiltersChange }: FilterPanelProps) {
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Results Limit
-          </label>
-          <select
-            value={filters.limit}
-            onChange={(e) => handleFilterChange('limit', e.target.value)}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
-          >
-            <option value="50">50</option>
-            <option value="100">100</option>
-            <option value="250">250</option>
-            <option value="500">500</option>
-            <option value="1000">1000</option>
-          </select>
-        </div>
       </div>
     </div>
   );

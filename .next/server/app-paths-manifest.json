@@ -1,3 +1,6 @@
 {
-  "/page": "app/page.js"
+  "/page": "app/page.js",
+  "/api/filters/route": "app/api/filters/route.js",
+  "/api/results/route": "app/api/results/route.js",
+  "/api/analytics/route": "app/api/analytics/route.js"
 }

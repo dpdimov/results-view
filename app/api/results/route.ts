@@ -9,13 +9,13 @@ export async function GET(request: NextRequest) {
       assessmentId: searchParams.get('assessmentId') || undefined,
       customCode: searchParams.get('customCode') || undefined,
       emailDomain: searchParams.get('emailDomain') || undefined,
-      styleName: searchParams.get('styleName') || undefined,
       dateFrom: searchParams.get('dateFrom') ? new Date(searchParams.get('dateFrom')!) : undefined,
       dateTo: searchParams.get('dateTo') ? new Date(searchParams.get('dateTo')!) : undefined,
-      limit: searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : 100,
-      offset: searchParams.get('offset') ? parseInt(searchParams.get('offset')!) : 0,
+      limit: 1000, // Fixed limit for visualization data
+      offset: 0,
     };
 
+    // Only fetch data needed for visualizations and analytics
     const [results, count] = await Promise.all([
       ResultsService.getAllResults(filters),
       ResultsService.getResultsCount(filters)
