@@ -54,60 +54,27 @@ export default function Chart({ results }: ChartProps) {
 
   useEffect(() => {
     if (results.length > 0) {
-      processHeatmapData();
+      processScatterData();
     }
   }, [results]);
 
-  const processHeatmapData = () => {
-    const gridSize = 0.1;
-    const grid: { [key: string]: DataPoint } = {};
+  const processScatterData = () => {
+    // Convert all results to simple points (no aggregation)
+    const scatterPoints: DataPoint[] = results.map(result => ({
+      x: parseFloat(result.x_coordinate.toString()),
+      y: parseFloat(result.y_coordinate.toString()),
+      count: 1 // Each individual point
+    }));
 
-    results.forEach(result => {
-      const x = parseFloat(result.x_coordinate.toString());
-      const y = parseFloat(result.y_coordinate.toString());
-      
-      const gridX = Math.round(x / gridSize) * gridSize;
-      const gridY = Math.round(y / gridSize) * gridSize;
-      const key = `${gridX.toFixed(3)},${gridY.toFixed(3)}`;
-
-      if (grid[key]) {
-        grid[key].count += 1;
-      } else {
-        grid[key] = { x: gridX, y: gridY, count: 1 };
-      }
-    });
-
-    setProcessedData(Object.values(grid));
+    setProcessedData(scatterPoints);
   };
 
-  const getPointColor = (count: number) => {
-    const maxCount = Math.max(...processedData.map(d => d.count));
-    const intensity = count / maxCount;
-    
-    // Grey to dark blue (#002c5f) scale
-    const greyR = 128;
-    const greyG = 128;
-    const greyB = 128;
-    
-    const blueR = 0;   // #002c5f red component
-    const blueG = 44;  // #002c5f green component  
-    const blueB = 95;  // #002c5f blue component
-    
-    // Interpolate between grey and blue
-    const r = Math.floor(greyR * (1 - intensity) + blueR * intensity);
-    const g = Math.floor(greyG * (1 - intensity) + blueG * intensity);
-    const b = Math.floor(greyB * (1 - intensity) + blueB * intensity);
-    
-    const alpha = Math.min(0.6 + intensity * 0.4, 1);
-    
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  const getPointColor = () => {
+    return '#333333'; // Consistent grey color
   };
 
-  const getPointSize = (count: number) => {
-    const maxCount = Math.max(...processedData.map(d => d.count));
-    const minSize = 3;
-    const maxSize = 15;
-    return minSize + (count / maxCount) * (maxSize - minSize);
+  const getPointSize = () => {
+    return 4; // Consistent size for all points
   };
 
   const chartData = {
@@ -118,11 +85,11 @@ export default function Chart({ results }: ChartProps) {
           x: point.x,
           y: point.y,
         })),
-        backgroundColor: processedData.map(point => getPointColor(point.count)),
-        borderColor: processedData.map(point => getPointColor(point.count).replace(/[\d.]+\)$/g, '1)')),
+        backgroundColor: getPointColor(),
+        borderColor: getPointColor(),
         borderWidth: 1,
-        pointRadius: processedData.map(point => getPointSize(point.count)),
-        pointHoverRadius: processedData.map(point => getPointSize(point.count) + 2),
+        pointRadius: getPointSize(),
+        pointHoverRadius: getPointSize() + 2,
         showLine: false, // Ensure no lines are drawn
       },
     ],
@@ -165,11 +132,7 @@ export default function Chart({ results }: ChartProps) {
           title: () => '',
           label: (context: any) => {
             const point = context.parsed;
-            const dataPoint = processedData[context.dataIndex];
-            return [
-              `Position: (${point.x.toFixed(3)}, ${point.y.toFixed(3)})`,
-              `Count: ${dataPoint.count} assessment${dataPoint.count > 1 ? 's' : ''}`
-            ];
+            return `Position: (${point.x.toFixed(3)}, ${point.y.toFixed(3)})`;
           }
         }
       }

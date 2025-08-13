@@ -3,11 +3,13 @@
 import { useState, useEffect } from 'react';
 import { AssessmentResult } from '@/lib/database';
 import FilterPanel from '@/components/FilterPanel';
+import PublicFilterPanel from '@/components/PublicFilterPanel';
 import ResultsTable from '@/components/ResultsTable';
 import AnalyticsPanel from '@/components/AnalyticsPanel';
 import ScatterplotHeatmap from '@/components/ScatterplotHeatmap';
 import AdminLogin from '@/components/AdminLogin';
 import { checkClientAuth, setClientAuth, logout } from '@/lib/auth';
+import { getBackgroundImageForAssessment } from '@/lib/config';
 
 interface ResultsResponse {
   results: AssessmentResult[];
@@ -20,8 +22,10 @@ export default function Home() {
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({});
+  const [publicFilters, setPublicFilters] = useState({});
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
+  const [backgroundImage, setBackgroundImage] = useState<string>('/images/plot-background.png');
 
   useEffect(() => {
     // Check authentication on component mount
@@ -29,16 +33,55 @@ export default function Home() {
     setIsAuthenticated(authenticated);
     setAuthChecked(true);
     
-    if (authenticated) {
-      fetchResults(filters);
-    }
+    // Always fetch public data
+    fetchPublicResults(publicFilters);
   }, []);
+
+  useEffect(() => {
+    // Always fetch public data when public filters change
+    fetchPublicResults(publicFilters);
+    // Update background image when filters change
+    updateBackgroundImage(publicFilters);
+  }, [publicFilters]);
 
   useEffect(() => {
     if (isAuthenticated) {
       fetchResults(filters);
     }
   }, [filters, isAuthenticated]);
+
+  const updateBackgroundImage = async (filterParams: any) => {
+    try {
+      const assessmentId = filterParams.assessmentId || 'kinetic-thinking';
+      const bgImage = await getBackgroundImageForAssessment(assessmentId);
+      setBackgroundImage(bgImage);
+    } catch (error) {
+      console.error('Error loading background image:', error);
+      setBackgroundImage('/images/plot-background.png'); // fallback
+    }
+  };
+
+  const fetchPublicResults = async (filterParams: any) => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      Object.keys(filterParams).forEach(key => {
+        if (filterParams[key]) {
+          params.append(key, filterParams[key]);
+        }
+      });
+
+      const response = await fetch(`/api/results?${params}`);
+      const data: ResultsResponse = await response.json();
+      
+      setResults(data.results);
+      setTotalCount(data.count);
+    } catch (error) {
+      console.error('Error fetching results:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchResults = async (filterParams: any) => {
     setLoading(true);
@@ -62,6 +105,10 @@ export default function Home() {
     }
   };
 
+  const handlePublicFiltersChange = (newFilters: any) => {
+    setPublicFilters(newFilters);
+  };
+
   const handleFiltersChange = (newFilters: any) => {
     setFilters(newFilters);
   };
@@ -75,8 +122,8 @@ export default function Home() {
   const handleLogout = () => {
     logout();
     setIsAuthenticated(false);
-    setResults([]);
-    setTotalCount(0);
+    // Restore public data after logout
+    fetchPublicResults(publicFilters);
   };
 
   // Show loading while checking authentication
@@ -88,58 +135,72 @@ export default function Home() {
     );
   }
 
-  // Show login if not authenticated
-  if (!isAuthenticated) {
-    return <AdminLogin onLogin={handleLogin} />;
-  }
-
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
         <div className="mb-8">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Assessment Results Viewer</h1>
+              <h1 className="text-3xl font-bold text-gray-900">Kinetic Styles Results</h1>
               <p className="mt-2 text-gray-600">
-                View and analyze style assessment results from your Neon database
+                View and analyze the Kinetic Styles assessments results and visualizations
               </p>
             </div>
-            <button
-              onClick={handleLogout}
-              className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-
-        <FilterPanel onFiltersChange={handleFiltersChange} />
-        
-        <AnalyticsPanel filters={filters} />
-        
-        <ScatterplotHeatmap results={results} />
-        
-        <div className="mb-4">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold text-gray-800">
-              Results ({totalCount} total)
-            </h2>
-            {!loading && results.length > 0 && (
-              <p className="text-sm text-gray-600">
-                Showing {results.length} of {totalCount} results
-              </p>
+            {isAuthenticated && (
+              <button
+                onClick={handleLogout}
+                className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+              >
+                Logout
+              </button>
             )}
           </div>
         </div>
+
+        {/* Public Section - Always Visible */}
+        <PublicFilterPanel onFiltersChange={handlePublicFiltersChange} />
         
-        <ResultsTable results={results} loading={loading} />
+        <AnalyticsPanel filters={publicFilters} />
         
-        {!loading && results.length > 0 && results.length < totalCount && (
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              Showing first {results.length} results. Use filters to narrow down or increase the limit to see more.
-            </p>
+        <ScatterplotHeatmap results={results} backgroundImage={backgroundImage} assessmentId={publicFilters.assessmentId || 'kinetic-thinking'} />
+        
+        {/* Admin Section - Only Visible After Login */}
+        {!isAuthenticated ? (
+          <div className="mt-8">
+            <AdminLogin onLogin={handleLogin} />
           </div>
+        ) : (
+          <>
+            <div className="mt-8 pt-8 border-t border-gray-300">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Admin Panel</h2>
+              
+              <FilterPanel onFiltersChange={handleFiltersChange} />
+              
+              <div className="mb-4">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-xl font-semibold text-gray-800">
+                    Detailed Results ({totalCount} total)
+                  </h3>
+                  {!loading && results.length > 0 && (
+                    <p className="text-sm text-gray-600">
+                      Showing {results.length} of {totalCount} results
+                    </p>
+                  )}
+                </div>
+              </div>
+              
+              <ResultsTable results={results} loading={loading} />
+              
+              {!loading && results.length > 0 && results.length < totalCount && (
+                <div className="mt-6 text-center">
+                  <p className="text-sm text-gray-600">
+                    Showing first {results.length} results. Use filters to narrow down or increase the limit to see more.
+                  </p>
+                </div>
+              )}
+            </div>
+          </>
         )}
       </div>
     </div>

@@ -1,59 +1,47 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { AssessmentResult } from '@/lib/database';
 import dynamic from 'next/dynamic';
 
-// Dynamically import Chart component to avoid SSR issues
+// Dynamically import components to avoid SSR issues
+const DensityMap = dynamic(() => import('./DensityMap'), { 
+  ssr: false,
+  loading: () => (
+    <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+      <div className="flex justify-center py-8">
+        <div className="flex items-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mr-3"></div>
+          <span className="text-gray-600">Loading visualization...</span>
+        </div>
+      </div>
+    </div>
+  )
+});
+
 const Chart = dynamic(() => import('./Chart'), { 
   ssr: false,
-  loading: () => <div className="flex justify-center py-8"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div></div>
+  loading: () => (
+    <div className="flex justify-center py-8">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+    </div>
+  )
 });
 
 interface ScatterplotHeatmapProps {
   results: AssessmentResult[];
   backgroundImage?: string;
+  assessmentId?: string;
 }
 
-interface DataPoint {
-  x: number;
-  y: number;
-  count: number;
-}
-
-export default function ScatterplotHeatmap({ results, backgroundImage = '/images/plot-background.png' }: ScatterplotHeatmapProps) {
-  const [gridData, setGridData] = useState<DataPoint[]>([]);
-
-  useEffect(() => {
-    if (results.length > 0) {
-      // Simple grid processing
-      const gridSize = 0.1;
-      const grid: { [key: string]: DataPoint } = {};
-
-      results.forEach(result => {
-        const x = parseFloat(result.x_coordinate.toString());
-        const y = parseFloat(result.y_coordinate.toString());
-        
-        const gridX = Math.round(x / gridSize) * gridSize;
-        const gridY = Math.round(y / gridSize) * gridSize;
-        const key = `${gridX.toFixed(3)},${gridY.toFixed(3)}`;
-
-        if (grid[key]) {
-          grid[key].count += 1;
-        } else {
-          grid[key] = { x: gridX, y: gridY, count: 1 };
-        }
-      });
-
-      setGridData(Object.values(grid));
-    }
-  }, [results]);
+export default function ScatterplotHeatmap({ results, backgroundImage = '/images/plot-background.png', assessmentId = 'kinetic-thinking' }: ScatterplotHeatmapProps) {
+  const [viewMode, setViewMode] = useState<'density' | 'scatter'>('density');
 
   if (results.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow-md p-8">
         <div className="text-center text-gray-500">
-          <p className="text-lg">No data available for heatmap</p>
+          <p className="text-lg">No data available for visualization</p>
           <p className="text-sm mt-2">Results will appear here when data is loaded</p>
         </div>
       </div>
@@ -62,15 +50,43 @@ export default function ScatterplotHeatmap({ results, backgroundImage = '/images
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-      <div className="mb-4">
-        <h2 className="text-lg font-semibold text-gray-800">Results Heatmap</h2>
-      </div>
-      
-      <div className="flex justify-center">
-        <div className="w-full max-w-2xl">
-          <Chart results={results} />
+      <div className="mb-4 flex justify-between items-center">
+        <h2 className="text-lg font-semibold text-gray-800">Results Visualization</h2>
+        <div className="flex bg-gray-100 rounded-lg p-1">
+          <button
+            onClick={() => setViewMode('density')}
+            className={`px-3 py-1 rounded-md text-sm transition-colors ${
+              viewMode === 'density'
+                ? 'bg-blue-600 text-white shadow-sm'
+                : 'text-gray-600 hover:text-gray-800'
+            }`}
+          >
+            Density Map
+          </button>
+          <button
+            onClick={() => setViewMode('scatter')}
+            className={`px-3 py-1 rounded-md text-sm transition-colors ${
+              viewMode === 'scatter'
+                ? 'bg-blue-600 text-white shadow-sm'
+                : 'text-gray-600 hover:text-gray-800'
+            }`}
+          >
+            Scatter Plot
+          </button>
         </div>
       </div>
+      
+      {viewMode === 'density' ? (
+        <div className="flex justify-center">
+          <DensityMap results={results} backgroundImage={backgroundImage} width={400} height={400} assessmentId={assessmentId} />
+        </div>
+      ) : (
+        <div className="flex justify-center">
+          <div style={{ width: 400, height: 400 }}>
+            <Chart results={results} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

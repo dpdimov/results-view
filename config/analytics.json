@@ -1,0 +1,10 @@
+{
+  "coordinateLabels": {
+    "x_coordinate": "Innovation Score",
+    "y_coordinate": "Collaboration Score"
+  },
+  "analyticsConfig": {
+    "showPerAssessment": true,
+    "defaultAssessmentName": "Assessment"
+  }
+}

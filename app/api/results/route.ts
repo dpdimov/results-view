@@ -6,6 +6,7 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     
     const filters = {
+      assessmentId: searchParams.get('assessmentId') || undefined,
       customCode: searchParams.get('customCode') || undefined,
       emailDomain: searchParams.get('emailDomain') || undefined,
       styleName: searchParams.get('styleName') || undefined,

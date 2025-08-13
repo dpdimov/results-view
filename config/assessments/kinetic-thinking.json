@@ -1,0 +1,23 @@
+{
+  "name": "Kinetic Thinking Assessment",
+  "description": "Measures creative and dynamic thinking patterns",
+  "coordinateLabels": {
+    "x_coordinate": "Creative Flexibility",
+    "y_coordinate": "Dynamic Innovation"
+  },
+  "backgroundImage": "/images/kinetic-thinking-background.png",
+  "visualization": {
+    "densityConfig": {
+      "bandwidth": 0.03,
+      "maxDistanceMultiplier": 2,
+      "alphaRange": {
+        "min": 30,
+        "max": 150
+      }
+    },
+    "colors": {
+      "primary": "#4338ca",
+      "secondary": "#06b6d4"
+    }
+  }
+}

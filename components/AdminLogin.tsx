@@ -41,9 +41,9 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="max-w-md w-full bg-white rounded-lg shadow-md p-8">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Admin Access Required</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Admin Section</h1>
           <p className="text-gray-600 mt-2">
-            Enter the admin password to view assessment results
+            Enter the admin password to access further options
           </p>
         </div>
 
@@ -79,7 +79,7 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
 
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-500">
-            View-only access for assessment results
+            Enhanced analytics interface
           </p>
         </div>
       </div>

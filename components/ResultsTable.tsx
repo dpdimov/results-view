@@ -40,6 +40,9 @@ export default function ResultsTable({ results, loading }: ResultsTableProps) {
                 ID
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Assessment ID
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Coordinates
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -61,6 +64,9 @@ export default function ResultsTable({ results, loading }: ResultsTableProps) {
               <tr key={result.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                   {result.id}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {result.assessment_id || '-'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   ({parseFloat(result.x_coordinate.toString()).toFixed(3)}, {parseFloat(result.y_coordinate.toString()).toFixed(3)})

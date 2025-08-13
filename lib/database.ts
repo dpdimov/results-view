@@ -2,6 +2,7 @@ import { sql } from '@vercel/postgres';
 
 export interface AssessmentResult {
   id: number;
+  assessment_id?: string;
   x_coordinate: number;
   y_coordinate: number;
   custom_code?: string;
@@ -14,6 +15,7 @@ export interface AssessmentResult {
 }
 
 export interface FilterOptions {
+  assessmentId?: string;
   customCode?: string;
   emailDomain?: string;
   styleName?: string;
@@ -29,6 +31,12 @@ export class ResultsService {
       let query = `SELECT * FROM assessment_results WHERE 1=1`;
       const params: any[] = [];
       let paramCount = 0;
+
+      if (filters.assessmentId) {
+        paramCount++;
+        query += ` AND assessment_id = $${paramCount}`;
+        params.push(filters.assessmentId);
+      }
 
       if (filters.customCode) {
         paramCount++;
@@ -87,6 +95,12 @@ export class ResultsService {
       let query = `SELECT COUNT(*) as count FROM assessment_results WHERE 1=1`;
       const params: any[] = [];
       let paramCount = 0;
+
+      if (filters.assessmentId) {
+        paramCount++;
+        query += ` AND assessment_id = $${paramCount}`;
+        params.push(filters.assessmentId);
+      }
 
       if (filters.customCode) {
         paramCount++;
@@ -171,6 +185,21 @@ export class ResultsService {
     }
   }
 
+  static async getUniqueAssessmentIds(): Promise<string[]> {
+    try {
+      const result = await sql`
+        SELECT DISTINCT assessment_id 
+        FROM assessment_results 
+        WHERE assessment_id IS NOT NULL 
+        ORDER BY assessment_id
+      `;
+      return result.rows.map(row => row.assessment_id);
+    } catch (error) {
+      console.error('Database error fetching assessment IDs:', error);
+      return [];
+    }
+  }
+
   static async getAnalyticsSummary(filters: FilterOptions = {}) {
     try {
       let query = `
@@ -181,12 +210,19 @@ export class ResultsService {
           MIN(completed_at) as first_assessment,
           MAX(completed_at) as last_assessment,
           COUNT(DISTINCT custom_code) as unique_custom_codes,
-          COUNT(DISTINCT email_domain) as unique_domains
+          COUNT(DISTINCT email_domain) as unique_domains,
+          COUNT(DISTINCT assessment_id) as unique_assessment_ids
         FROM assessment_results 
         WHERE 1=1
       `;
       const params: any[] = [];
       let paramCount = 0;
+
+      if (filters.assessmentId) {
+        paramCount++;
+        query += ` AND assessment_id = $${paramCount}`;
+        params.push(filters.assessmentId);
+      }
 
       if (filters.customCode) {
         paramCount++;
